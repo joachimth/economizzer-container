@@ -14,10 +14,19 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN docker-php-ext-install bcmath mbstring curl xml zip gd intl xsl
 
 RUN git -C /var/www/html/ clone https://github.com/gugoan/economizzer.git
-WORKDIR /var/www/html/economizzer
+WORKDIR /var/www/html/
+
+RUN a2enmod rewrite
+ADD . /var/www/html
 
 COPY phpinfo.php /var/www/html/
+COPY php.ini /usr/local/etc/php/
 
 RUN cd /var/www/html/economizzer && \
 	composer.phar global require "fxp/composer-asset-plugin:^1.3.1" && \
     composer.phar install	
+	
+RUN cd /var/www/html/economizzer && \
+	chmod 777 assets/ && \
+	chmod 777 runtime/ && \
+	chmod 777 web/assets/ 	
